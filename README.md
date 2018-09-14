@@ -19,7 +19,7 @@ Let's assume we use Solr as as our Search Engine and we index 3 records into it,
 	`"content": "This data is protected"`
 `}`
 
-But before we index let's do the schema like this,
+But before we index let's do the schema like the below. stored="false" will make the data not retrievable from the search index
 
 `<field name="content" type="text_general_encrypt" indexed="true" stored="false" multiValued="false"/>`
 
