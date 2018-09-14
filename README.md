@@ -1,36 +1,39 @@
 # Solr-Encrypted-Search
 Index encrypted files, enable search on them, and not expose the data in Search
 
-
 # Welcome to the Solr-Encrypted-Search wiki!
 
 ### Use Case: How to enable search on a file/data after it is encrypted before it is stored in the search index. And also make the data not-visible in the search 
 
 Let's assume we use Solr as as our Search Engine and we index 3 records into it,
 
-`{`
-	`"id": 1,`
-	`"content": "This is a sample title with no data"`
-`}, {`
-	`"id": 2,`
-	`"content": "I need to ecrypt my search data for privacy"`
-`}, {`
-	`"id": 3,`
-	`"content": "This data is protected"`
-`}`
+```
+{
+	"id": 1,
+	"content": "This is a sample title with no data"
+}, {
+	"id": 2,
+	"content": "I need to ecrypt my search data for privacy"
+}, {
+	"id": 3,
+	"content": "This data is protected"
+}
+```
 
 But before we index let's do the schema like the below. stored="false" will make the data not retrievable from the search index
 
 `<field name="content" type="text_general_encrypt" indexed="true" stored="false" multiValued="false"/>`
 
-` <fieldType name="text_general_encrypt" class="solr.TextField" positionIncrementGap="100">`
-      `<analyzer type="index">`
-        `<tokenizer class="solr.KeywordTokenizerFactory"/>`
-      `</analyzer>`
-      `<analyzer type="query">`
-        `<tokenizer class="solr.KeywordTokenizerFactory"/>`
-      `</analyzer>`
-    `</fieldType>`
+```
+ <fieldType name="text_general_encrypt" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
+```
 
 For the sake of simplicity let's use the encryption logic from this page, [https://howtodoinjava.com/security/java-aes-encryption-example/](https://howtodoinjava.com/security/java-aes-encryption-example/)
 Credits to @Lokesh Gupta 
@@ -59,16 +62,18 @@ Note: Let's focus on the problem statement at hand and not on the code or the co
 
 We get the following encrypted data,
 
-`{`
-	`"id": 1,`
-	`"content": "L0C7QTRS+DShuAQ+owHI9g== jKduOo6HLWyaohywGqnK2g== dO4qW/9cX22gM67c/NTzrg== TQBuDsJpDAb0eYEBpeS0SA== 978GMKHzXap4iPJujJ7bow== 850+JgxY8iLZYYTSI08+Jg== b2eO+gpXAgbYHVtFpj4Npw== fwUa0PyoTeDl/AUidFlWcg=="`
-`}, {`
-	`"id": 2,`
-	`"content": "R+DEERdCKW+MIK8hV1TWIw== 8uRZC9TIgqtJLl49Mgwh1Q== /Nm2r/jIFssyPn2VH5KAZg== n4dfNBCl9g6zsWoDjFIu4w== hwrfYyRqhHolpHD0hL1Xcw== EwN5LpsX27ie4upqX7BAiA== fwUa0PyoTeDl/AUidFlWcg== hei8EywBg7V31OFOjWjPnA== hl/fvllCTr/sTv/gK1Vm6w=="`
-`}, {`
-	`"id": 3,`
-	`"content": "L0C7QTRS+DShuAQ+owHI9g== fwUa0PyoTeDl/AUidFlWcg== jKduOo6HLWyaohywGqnK2g== 1ZHsI7OCsPX9bqfkdXOQ7A=="`
-`}`
+```
+{
+	"id": 1,
+	"content": "L0C7QTRS+DShuAQ+owHI9g== jKduOo6HLWyaohywGqnK2g== dO4qW/9cX22gM67c/NTzrg== TQBuDsJpDAb0eYEBpeS0SA== 978GMKHzXap4iPJujJ7bow== 850+JgxY8iLZYYTSI08+Jg== b2eO+gpXAgbYHVtFpj4Npw== fwUa0PyoTeDl/AUidFlWcg=="
+}, {
+	"id": 2,
+	"content": "R+DEERdCKW+MIK8hV1TWIw== 8uRZC9TIgqtJLl49Mgwh1Q== /Nm2r/jIFssyPn2VH5KAZg== n4dfNBCl9g6zsWoDjFIu4w== hwrfYyRqhHolpHD0hL1Xcw== EwN5LpsX27ie4upqX7BAiA== fwUa0PyoTeDl/AUidFlWcg== hei8EywBg7V31OFOjWjPnA== hl/fvllCTr/sTv/gK1Vm6w=="
+}, {
+	"id": 3,
+	"content": "L0C7QTRS+DShuAQ+owHI9g== fwUa0PyoTeDl/AUidFlWcg== jKduOo6HLWyaohywGqnK2g== 1ZHsI7OCsPX9bqfkdXOQ7A=="
+}
+```
 
 Index them like this,
 
@@ -107,13 +112,15 @@ Credits to @Sumeet Sharma
 
 Something like this,
 
-`   <fieldType name="text_general_encrypt" class="solr.TextField" positionIncrementGap="100">`
-      `<analyzer type="index">`
-        `<tokenizer class="solr.KeywordTokenizerFactory"/>`
-		`<filter class="com.solr.custom.filter.test.CustomEncryptionTokenFilterFactoryIndexer" />`
-      `</analyzer>`
-      `<analyzer type="query">`
-        `<tokenizer class="solr.KeywordTokenizerFactory"/>`
-		`<filter class="com.solr.custom.filter.test.CustomEncryptionTokenFilterFactoryQuery" />`
-      `</analyzer>`
-    `</fieldType>`
+```
+   <fieldType name="text_general_encrypt" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+		<filter class="com.solr.custom.filter.test.CustomEncryptionTokenFilterFactoryIndexer" />
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+		<filter class="com.solr.custom.filter.test.CustomEncryptionTokenFilterFactoryQuery" />
+      </analyzer>
+    </fieldType>
+```
